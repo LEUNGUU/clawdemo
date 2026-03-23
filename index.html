@@ -27,6 +27,7 @@ body{font-family:"PingFang SC","Noto Sans SC","Hiragino Sans GB","Microsoft YaHe
 nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(250,250,248,.85);backdrop-filter:blur(20px);border-bottom:1px solid rgba(0,0,0,.06);padding:16px 0}
 nav .inner{max-width:1100px;margin:0 auto;padding:0 24px;display:flex;align-items:center;justify-content:space-between}
 nav .logo{font-size:18px;font-weight:700;color:var(--orange)}
+nav .aws-logo{height:28px}
 nav .links{display:flex;gap:24px}
 nav .links a{color:var(--text-secondary);text-decoration:none;font-size:14px;transition:color .2s}
 nav .links a:hover{color:var(--orange)}
@@ -124,6 +125,7 @@ section{max-width:1100px;margin:0 auto;padding:100px 24px}
 
 /* Footer */
 footer{text-align:center;padding:60px 24px;color:var(--text-light);font-size:14px}
+footer .aws-footer{height:32px;margin-bottom:16px;filter:grayscale(.3);opacity:.7}
 footer .thanks{font-size:48px;font-weight:800;color:var(--text);margin-bottom:16px}
 
 /* Responsive */
@@ -142,6 +144,7 @@ footer .thanks{font-size:48px;font-weight:800;color:var(--text);margin-bottom:16
 <nav>
   <div class="inner">
     <div class="logo">🦞 OpenClaw Talk</div>
+    <img src="aws-logo-dark.png" alt="亚马逊云科技" class="aws-logo">
     <div class="links">
       <a href="#what">龙虾是什么</a>
       <a href="#scenes">场景展示</a>
@@ -298,6 +301,7 @@ footer .thanks{font-size:48px;font-weight:800;color:var(--text);margin-bottom:16
 </section>
 
 <footer>
+  <img src="aws-logo-dark.png" alt="亚马逊云科技" class="aws-footer">
   <div class="thanks">谢谢！</div>
   <p>OpenClaw × 亚马逊云科技实战分享</p>
 </footer>
