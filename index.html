@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>打造安全可控的龙虾同事 — OpenClaw × 亚马逊云科技</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --orange:#FF6B35;--orange-light:#FFF3ED;--orange-bg:#FFF8F4;
+  --teal:#2ABFBF;--teal-light:#E8F8F8;
+  --bg:#FAFAF8;--card:#FFFFFF;
+  --text:#2D2D2D;--text-secondary:#6B7280;--text-light:#9CA3AF;
+  --shadow:0 2px 16px rgba(0,0,0,0.06);
+  --shadow-hover:0 8px 32px rgba(0,0,0,0.1);
+  --radius:16px;
+}
+html{scroll-behavior:smooth}
+body{font-family:"PingFang SC","Noto Sans SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--text);line-height:1.8;overflow-x:hidden}
+
+/* Fade-in animation */
+.fade-up{opacity:0;transform:translateY(30px);transition:opacity .6s ease,transform .6s ease}
+.fade-up.visible{opacity:1;transform:translateY(0)}
+.delay-1{transition-delay:.1s}.delay-2{transition-delay:.2s}.delay-3{transition-delay:.3s}.delay-4{transition-delay:.4s}
+
+/* Nav */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(250,250,248,.85);backdrop-filter:blur(20px);border-bottom:1px solid rgba(0,0,0,.06);padding:16px 0}
+nav .inner{max-width:1100px;margin:0 auto;padding:0 24px;display:flex;align-items:center;justify-content:space-between}
+nav .logo{font-size:18px;font-weight:700;color:var(--orange)}
+nav .links{display:flex;gap:24px}
+nav .links a{color:var(--text-secondary);text-decoration:none;font-size:14px;transition:color .2s}
+nav .links a:hover{color:var(--orange)}
+
+/* Section base */
+section{max-width:1100px;margin:0 auto;padding:100px 24px}
+
+/* Hero */
+.hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding-top:80px}
+.hero .lobster{font-size:80px;margin-bottom:24px;animation:float 3s ease-in-out infinite}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+.hero h1{font-size:clamp(32px,5vw,52px);font-weight:800;line-height:1.3;margin-bottom:16px;background:linear-gradient(135deg,var(--orange),#E85D26);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero .subtitle{font-size:clamp(16px,2.5vw,22px);color:var(--text-secondary);margin-bottom:40px}
+.hero .typewriter{font-size:18px;color:var(--teal);min-height:28px}
+.hero .typewriter .cursor{display:inline-block;width:2px;height:20px;background:var(--teal);margin-left:2px;animation:blink 1s step-end infinite;vertical-align:text-bottom}
+@keyframes blink{50%{opacity:0}}
+.hero .stats{display:flex;gap:40px;margin-top:48px;flex-wrap:wrap;justify-content:center}
+.hero .stat{text-align:center}
+.hero .stat .num{font-size:32px;font-weight:800;color:var(--orange)}
+.hero .stat .label{font-size:13px;color:var(--text-light);margin-top:4px}
+
+/* Cards grid */
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:24px;margin-top:40px}
+.card{background:var(--card);border-radius:var(--radius);padding:32px 28px;box-shadow:var(--shadow);transition:transform .3s,box-shadow .3s}
+.card:hover{transform:translateY(-4px);box-shadow:var(--shadow-hover)}
+.card .icon{font-size:40px;margin-bottom:16px}
+.card h3{font-size:18px;font-weight:700;margin-bottom:8px}
+.card p{font-size:14px;color:var(--text-secondary);line-height:1.7}
+.card.highlight{border:2px solid var(--orange);background:var(--orange-light)}
+
+/* Section titles */
+.section-tag{display:inline-block;font-size:13px;font-weight:600;color:var(--orange);background:var(--orange-light);padding:6px 16px;border-radius:20px;margin-bottom:16px}
+.section-title{font-size:clamp(24px,4vw,36px);font-weight:800;margin-bottom:12px;line-height:1.3}
+.section-desc{font-size:16px;color:var(--text-secondary);max-width:640px;margin-bottom:32px}
+
+/* Feature row */
+.features{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:40px}
+.feature{text-align:center;padding:40px 24px;background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow)}
+.feature .icon{font-size:48px;margin-bottom:16px}
+.feature h3{font-size:20px;font-weight:700;margin-bottom:8px}
+.feature p{font-size:14px;color:var(--text-secondary)}
+
+/* Dark section */
+.dark-section{background:#1A1A2E;color:#fff;margin:0;max-width:none;padding:100px 24px}
+.dark-section .inner{max-width:1100px;margin:0 auto}
+.dark-section .section-tag{background:rgba(255,107,53,.15);color:#FF8C5A}
+.dark-section .section-title{color:#fff}
+.dark-section .section-desc{color:rgba(255,255,255,.6)}
+.dark-section .card{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1)}
+.dark-section .card h3{color:#fff}
+.dark-section .card p{color:rgba(255,255,255,.6)}
+
+/* Stats row */
+.stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:40px}
+.stat-card{text-align:center;padding:40px 24px;background:rgba(255,107,53,.08);border:1px solid rgba(255,107,53,.2);border-radius:var(--radius)}
+.stat-card .big{font-size:48px;font-weight:800;color:var(--orange);display:block}
+.stat-card .desc{font-size:14px;color:rgba(255,255,255,.6);margin-top:8px}
+
+/* Scenario cards */
+.scenario{display:grid;grid-template-columns:1fr 1fr;gap:32px;margin-top:40px}
+.scenario-card{padding:40px 32px;background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);border-left:4px solid var(--orange)}
+.scenario-card h3{font-size:20px;font-weight:700;margin-bottom:12px}
+.scenario-card p{font-size:15px;color:var(--text-secondary);line-height:1.8}
+.scenario-card .tag{display:inline-block;font-size:12px;background:var(--teal-light);color:var(--teal);padding:4px 12px;border-radius:12px;margin-top:16px;font-weight:600}
+
+/* Solution diagram */
+.diagram{display:flex;align-items:center;justify-content:center;gap:24px;margin:48px 0;flex-wrap:wrap}
+.diagram .box{background:var(--card);border-radius:var(--radius);padding:32px 28px;box-shadow:var(--shadow);text-align:center;min-width:180px}
+.diagram .box .icon{font-size:40px;margin-bottom:8px}
+.diagram .box h4{font-size:16px;font-weight:700}
+.diagram .box p{font-size:13px;color:var(--text-secondary)}
+.diagram .arrow{font-size:28px;color:var(--orange)}
+
+/* Steps */
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;margin-top:40px}
+.step{text-align:center;padding:32px 20px;background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);position:relative}
+.step .num{display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;background:var(--orange);color:#fff;border-radius:50%;font-size:18px;font-weight:800;margin-bottom:16px}
+.step h4{font-size:16px;font-weight:700;margin-bottom:8px}
+.step p{font-size:13px;color:var(--text-secondary)}
+
+/* Pillars */
+.pillars{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:40px}
+.pillar{padding:32px 24px;background:var(--teal-light);border-radius:var(--radius);text-align:center}
+.pillar .icon{font-size:36px;margin-bottom:12px}
+.pillar h4{font-size:16px;font-weight:700;margin-bottom:8px;color:var(--teal)}
+.pillar p{font-size:14px;color:var(--text-secondary)}
+
+/* Summary */
+.summary-list{list-style:none;margin-top:40px}
+.summary-list li{font-size:clamp(18px,3vw,24px);font-weight:700;padding:20px 0;border-bottom:1px solid rgba(0,0,0,.06)}
+.summary-list li span{color:var(--orange);margin-right:12px}
+
+/* Quote */
+.quote{font-size:clamp(20px,3.5vw,32px);font-weight:800;text-align:center;margin-top:48px;padding:40px;background:linear-gradient(135deg,var(--orange-light),var(--teal-light));border-radius:var(--radius);line-height:1.5}
+
+/* Footer */
+footer{text-align:center;padding:60px 24px;color:var(--text-light);font-size:14px}
+footer .thanks{font-size:48px;font-weight:800;color:var(--text);margin-bottom:16px}
+
+/* Responsive */
+@media(max-width:768px){
+  .features,.stats-row,.scenario,.steps,.pillars{grid-template-columns:1fr}
+  .cards{grid-template-columns:1fr}
+  .diagram{flex-direction:column}
+  .diagram .arrow{transform:rotate(90deg)}
+  nav .links{display:none}
+  .hero .stats{gap:24px}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="inner">
+    <div class="logo">🦞 OpenClaw Talk</div>
+    <div class="links">
+      <a href="#what">龙虾是什么</a>
+      <a href="#scenes">场景展示</a>
+      <a href="#risk">风险</a>
+      <a href="#solution">解决方案</a>
+    </div>
+  </div>
+</nav>
+
+<!-- Hero -->
+<section class="hero" id="top">
+  <div class="lobster">🦞</div>
+  <h1>打造安全可控的龙虾同事</h1>
+  <p class="subtitle">OpenClaw × 亚马逊云科技实战分享</p>
+  <div class="typewriter"><span id="typed"></span><span class="cursor"></span></div>
+  <div class="stats fade-up">
+    <div class="stat"><div class="num" data-target="330000">0</div><div class="label">GitHub Stars</div></div>
+    <div class="stat"><div class="num" data-target="500" data-suffix="万">0</div><div class="label">最高单项补贴</div></div>
+    <div class="stat"><div class="num" data-target="8" data-suffix="分钟">0</div><div class="label">部署时间</div></div>
+  </div>
+</section>
+
+<!-- 龙虾是什么 -->
+<section id="what">
+  <span class="section-tag fade-up">它和你用过的 AI 有什么不同？</span>
+  <h2 class="section-title fade-up">四个比喻，秒懂龙虾</h2>
+  <p class="section-desc fade-up">不用任何技术术语，30 秒理解 OpenClaw 的定位</p>
+  <div class="cards">
+    <div class="card fade-up delay-1"><div class="icon">📞</div><h3>豆包</h3><p>电话咨询师 — 你问它答，它没有手，不能帮你操作电脑</p></div>
+    <div class="card fade-up delay-2"><div class="icon">🏢</div><h3>Manus</h3><p>外包公司 — 你提需求它在云端完成，但数据要经过它的服务器</p></div>
+    <div class="card fade-up delay-3"><div class="icon">👨‍💻</div><h3>Claude Code</h3><p>驻场程序员 — 帮你写代码，但更多是被动响应</p></div>
+    <div class="card highlight fade-up delay-4"><div class="icon">🦞</div><h3>OpenClaw</h3><p>住在你家的全能管家 — 跑在你自己的电脑上，数据不出本地，说一句话它就去干活</p></div>
+  </div>
+</section>
+
+<!-- 三个区别 -->
+<section>
+  <span class="section-tag fade-up">为什么说它是"数字员工"？</span>
+  <h2 class="section-title fade-up">三个本质区别</h2>
+  <div class="features">
+    <div class="feature fade-up delay-1"><div class="icon">🤚</div><h3>能动手</h3><p>不只给建议，直接操作你的电脑：打开软件、整理文件、收发邮件</p></div>
+    <div class="feature fade-up delay-2"><div class="icon">💓</div><h3>不睡觉</h3><p>有"心跳"机制，每隔一段时间自己醒来，主动检查有没有需要处理的事</p></div>
+    <div class="feature fade-up delay-3"><div class="icon">🧠</div><h3>有记忆</h3><p>不是关掉窗口就忘了，它把你的习惯存在本地，越用越懂你</p></div>
+  </div>
+</section>
+
+<!-- 场景展示 -->
+<section id="scenes">
+  <span class="section-tag fade-up">真实场景</span>
+  <h2 class="section-title fade-up">龙虾能帮你做什么？</h2>
+  <div class="scenario">
+    <div class="scenario-card fade-up delay-1">
+      <h3>☀️ 你醒来，工作已经做好了</h3>
+      <p>你睡觉的时候，龙虾自动浏览过夜新闻、检查日历、整理待办。早上 8 点，一条消息推到你的微信，里面是今天你需要知道的一切。用得越久，它越懂你的口味。</p>
+      <div class="tag">Emily Elephant · 真实部署案例</div>
+    </div>
+    <div class="scenario-card fade-up delay-2">
+      <h3>🌙 你定目标，它替你执行</h3>
+      <p>告诉龙虾"帮我调研竞品"，然后去睡觉。第二天醒来，它已经调研了 5 个竞品、写了分析报告、甚至搭了产品原型，还自己建了看板跟踪进度。</p>
+      <div class="tag">不是等你问才答，它会自己想、自己做、自己汇报</div>
+    </div>
+  </div>
+</section>
+
+<!-- 社区案例 -->
+<section>
+  <span class="section-tag fade-up">社区真实案例</span>
+  <h2 class="section-title fade-up">还有人用龙虾做什么？</h2>
+  <div class="cards">
+    <div class="card fade-up delay-1"><div class="icon">🐕</div><h3>遛狗时语音修 bug</h3><p>边遛狗边语音指挥龙虾：查日志、定位问题、改配置、重新部署。全程没碰电脑。</p><p style="font-size:12px;color:var(--text-light);margin-top:8px">BigC · 211 likes</p></div>
+    <div class="card fade-up delay-2"><div class="icon">🛏️</div><h3>躺床上重建网站</h3><p>通过 Telegram 指挥龙虾把博客迁移到 Astro，18 篇文章、DNS 切换，全程没开电脑。</p><p style="font-size:12px;color:var(--text-light);margin-top:8px">davekiss · 177 likes</p></div>
+    <div class="card fade-up delay-3"><div class="icon">👥</div><h3>一个人当一个团队</h3><p>独立创业者部署 4 只龙虾分工协作：战略、代码、营销、数据，各司其职。</p><p style="font-size:12px;color:var(--text-light);margin-top:8px">99 likes</p></div>
+    <div class="card fade-up delay-4"><div class="icon">🍽️</div><h3>全家的生活管家</h3><p>帮一对夫妻做每周菜谱、按超市货架分类生成购物清单、根据天气推荐今晚烧烤还是煲汤。</p><p style="font-size:12px;color:var(--text-light);margin-top:8px">153 likes</p></div>
+  </div>
+</section>
+
+<!-- 但是 -->
+<div class="dark-section">
+  <div class="inner">
+    <h2 class="section-title fade-up" style="font-size:clamp(40px,6vw,64px);text-align:center;margin-bottom:24px">但是。</h2>
+    <p class="section-desc fade-up" style="text-align:center;max-width:600px;margin:0 auto;font-size:18px">龙虾要帮你整理邮件，就得访问你的邮箱。要管理文件，就得读写你的硬盘。这些权限集中给一个自主决策的 AI，一旦出问题，后果很严重。</p>
+  </div>
+</div>
+
+<!-- 风险数据 -->
+<div class="dark-section" id="risk" style="padding-top:60px">
+  <div class="inner">
+    <span class="section-tag fade-up">这不是个例</span>
+    <h2 class="section-title fade-up">风险是真的</h2>
+    <p class="section-desc fade-up">连 Meta 的 AI 对齐负责人都翻车了 — AI 批量删除她的邮件，手机发停止指令没反应，最后冲到电脑前强制断电才停住。</p>
+    <div class="stats-row">
+      <div class="stat-card fade-up delay-1"><span class="big" data-target="42000">0</span><div class="desc">暴露在公网的实例</div></div>
+      <div class="stat-card fade-up delay-2"><span class="big">90%+</span><div class="desc">可被绕过认证</div></div>
+      <div class="stat-card fade-up delay-3"><span class="big" data-target="820">0</span><div class="desc">恶意技能被发现</div></div>
+    </div>
+    <p class="fade-up" style="text-align:center;margin-top:32px;color:rgba(255,255,255,.5);font-size:15px">2026 年已披露 6 个 CVE · 工信部、国家互联网应急中心、国家安全部均已发布安全预警</p>
+  </div>
+</div>
+
+<!-- 解决方案 -->
+<section id="solution">
+  <span class="section-tag fade-up">给龙虾一个安全的鱼缸</span>
+  <h2 class="section-title fade-up">Amazon Lightsail</h2>
+  <p class="section-desc fade-up">不让龙虾住在你家，给它一个专门的房间 — 亚马逊云上的一台独立服务器</p>
+  <div class="diagram fade-up">
+    <div class="box"><div class="icon">💻</div><h4>你的电脑</h4><p>安全、干净</p></div>
+    <div class="arrow">→</div>
+    <div class="box" style="border:2px solid var(--teal)"><div class="icon">🔒</div><h4>安全通道</h4><p>加密连接</p></div>
+    <div class="arrow">→</div>
+    <div class="box" style="border:2px solid var(--orange)"><div class="icon">🦞</div><h4>云上鱼缸</h4><p>Lightsail 实例</p></div>
+  </div>
+  <div class="cards" style="margin-top:40px">
+    <div class="card fade-up delay-1"><div class="icon">🏠</div><h3>隔离</h3><p>龙虾跑在云上，不碰你的电脑。再怎么折腾，也只是在自己的鱼缸里</p></div>
+    <div class="card fade-up delay-2"><div class="icon">🔐</div><h3>私有化</h3><p>数据在你自己的实例里，不经过任何第三方</p></div>
+    <div class="card fade-up delay-3"><div class="icon">💰</div><h3>便宜</h3><p>月付固定价格，不用担心 token 费用爆炸</p></div>
+    <div class="card fade-up delay-4"><div class="icon">💾</div><h3>可恢复</h3><p>支持快照备份，搞砸了一键回滚，就像游戏存档</p></div>
+  </div>
+</section>
+
+<!-- 4 步部署 -->
+<section>
+  <span class="section-tag fade-up">从零到能用</span>
+  <h2 class="section-title fade-up">只要 4 步</h2>
+  <p class="section-desc fade-up">不需要写代码，不需要配环境。会网购就会部署龙虾。</p>
+  <div class="steps">
+    <div class="step fade-up delay-1"><div class="num">1</div><h4>创建实例</h4><p>Lightsail 控制台选 OpenClaw 镜像，点创建</p></div>
+    <div class="step fade-up delay-2"><div class="num">2</div><h4>浏览器配对</h4><p>SSH 连上去，复制 token 到仪表盘，建立安全连接</p></div>
+    <div class="step fade-up delay-3"><div class="num">3</div><h4>启用 AI</h4><p>运行脚本，授权调用 Amazon Bedrock 大模型服务</p></div>
+    <div class="step fade-up delay-4"><div class="num">4</div><h4>开始用</h4><p>打开聊天页面，直接跟龙虾对话</p></div>
+  </div>
+</section>
+
+<!-- Bedrock -->
+<section>
+  <span class="section-tag fade-up">不只是模型，还有护栏</span>
+  <h2 class="section-title fade-up">Amazon Bedrock</h2>
+  <div class="pillars">
+    <div class="pillar fade-up delay-1"><div class="icon">🤖</div><h4>模型选择多</h4><p>Claude、Llama 等主流模型都有，不绑定某一家</p></div>
+    <div class="pillar fade-up delay-2"><div class="icon">🛡️</div><h4>安全护栏</h4><p>Guardrails — 设定 AI 不能做什么、不能说什么，给实习生定规矩</p></div>
+    <div class="pillar fade-up delay-3"><div class="icon">🔑</div><h4>权限控制</h4><p>IAM — 精确控制龙虾能访问什么，不是万能钥匙，只给需要的那几把</p></div>
+  </div>
+</section>
+
+<!-- 总结 -->
+<section>
+  <span class="section-tag fade-up">总结</span>
+  <h2 class="section-title fade-up">三句话</h2>
+  <ul class="summary-list">
+    <li class="fade-up delay-1"><span>1.</span>龙虾是真的有用 — 早报编辑、任务执行、越用越懂你</li>
+    <li class="fade-up delay-2"><span>2.</span>风险也是真的 — 连 AI 安全专家都翻过车，普通人更要小心</li>
+    <li class="fade-up delay-3"><span>3.</span>安全地养龙虾，从给它一个鱼缸开始 — Lightsail + Bedrock</li>
+  </ul>
+  <div class="quote fade-up">🦞 龙虾很酷，但别让它把你的家搞乱了</div>
+</section>
+
+<footer>
+  <div class="thanks">谢谢！</div>
+  <p>OpenClaw × 亚马逊云科技实战分享</p>
+</footer>
+
+<script>
+// Typewriter
+const phrases=["住在你家的全能管家","不睡觉的数字员工","越用越懂你的 AI 同事","会网购就会部署"];
+let pi=0,ci=0,del=false;
+const typedEl=document.getElementById("typed");
+function type(){
+  const p=phrases[pi];
+  if(!del){typedEl.textContent=p.slice(0,++ci);if(ci===p.length){del=true;setTimeout(type,2000);return}}
+  else{typedEl.textContent=p.slice(0,--ci);if(ci===0){del=false;pi=(pi+1)%phrases.length}}
+  setTimeout(type,del?40:80);
+}
+type();
+
+// Scroll fade-in with mobile fallback
+const fadeEls=document.querySelectorAll(".fade-up");
+if(!("IntersectionObserver" in window)||/iPhone|iPad|Android/i.test(navigator.userAgent)){
+  fadeEls.forEach(el=>el.classList.add("visible"));
+}else{
+  const obs=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add("visible")})},{threshold:.1,rootMargin:"0px 0px 50px 0px"});
+  fadeEls.forEach(el=>obs.observe(el));
+}
+
+// Counter animation
+function animateNum(el){
+  const target=parseInt(el.dataset.target);if(!target)return;
+  const suffix=el.dataset.suffix||"";
+  const duration=1500;const start=performance.now();
+  function tick(now){
+    const p=Math.min((now-start)/duration,1);
+    const eased=1-Math.pow(1-p,3);
+    const val=Math.floor(eased*target);
+    el.textContent=val.toLocaleString("zh-CN")+suffix;
+    if(p<1)requestAnimationFrame(tick);
+    else el.textContent=target.toLocaleString("zh-CN")+suffix;
+  }
+  requestAnimationFrame(tick);
+}
+const numObs=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting){animateNum(e.target);numObs.unobserve(e.target)}})},{threshold:.5});
+document.querySelectorAll("[data-target]").forEach(el=>numObs.observe(el));
+</script>
+</body>
+</html>
